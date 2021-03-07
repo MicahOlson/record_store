@@ -1,13 +1,12 @@
-require('sinatra')
-require('sinatra/reloader')
-require('./lib/album')
-require('pry')
-require('./lib/song')
-also_reload('lib/**/*.rb')
+require 'sinatra'
+require 'sinatra/reloader'
+require 'pry'
+require './lib/album'
+require './lib/song'
+also_reload 'lib/**/*.rb'
 
 get('/') do
-  @albums = Album.all
-  erb(:albums)
+  redirect to('/albums')
 end
 
 get('/albums') do
@@ -21,18 +20,17 @@ end
 
 post('/albums') do
   name = params[:album_name]
-  year = params[:album_year]
   artist = params[:album_artist]
+  year = params[:album_year]
   genre = params[:album_genre]
   searched_album = params[:searched_name]
   if searched_album != nil 
     @searched_albums = Album.search(searched_album) 
   else
-    album = Album.new(name, year, artist, genre, nil)
+    album = Album.new({name: name, artist: artist, year: year, genre: genre})
     album.save()   
   end
-  @albums = Album.all()
-  erb(:albums)
+  redirect to('/albums')
 end
 
 get('/albums/:id') do
@@ -47,16 +45,14 @@ end
 
 patch('/albums/:id') do
   @album = Album.find(params[:id].to_i())
-  @album.update(params[:name],params[:year],params[:artist],params[:genre])
-  @albums = Album.all
-  erb(:albums)
+  @album.update({name: params[:name], artist: params[:artist], year: params[:year], genre: params[:genre]})
+  redirect to('/albums')
 end
 
 delete('/albums/:id') do
   @album = Album.find(params[:id].to_i())
   @album.delete()
-  @albums = Album.all
-  erb(:albums)
+  redirect to('/albums')
 end
 
 get('/albums/:id/songs/:song_id') do
@@ -66,7 +62,7 @@ end
 
 post('/albums/:id/songs') do
   @album = Album.find(params[:id].to_i())
-  song = Song.new(params[:song_name], @album.id, nil)
+  song = Song.new({name: params[:song_name], album_id: @album.id})
   song.save()
   erb(:album)
 end
@@ -74,7 +70,7 @@ end
 patch('/albums/:id/songs/:song_id') do
   @album = Album.find(params[:id].to_i())
   song = Song.find(params[:song_id].to_i())
-  song.update(params[:name], @album.id)
+  song.update({name: params[:name], album_id: @album.id})
   erb(:album)
 end
 

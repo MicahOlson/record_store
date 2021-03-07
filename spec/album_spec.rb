@@ -4,6 +4,10 @@ require 'album'
 require 'song'
 
 describe '#Album' do
+  before(:each) do
+    Album.clear
+  end
+  
   after(:each) do
     Album.clear
     Song.clear

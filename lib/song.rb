@@ -43,13 +43,6 @@ class Song
 
   def self.find_by_album(alb_id)
     @@songs.values.select { |song| song.album_id == alb_id }
-    # songs = []
-    # @@songs.values.each do |song|
-    #   if song.album_id == alb_id
-    #     songs.push(song)
-    #   end
-    # end
-    # songs
   end 
 
   def album
