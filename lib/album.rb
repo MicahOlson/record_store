@@ -1,28 +1,29 @@
 class Album
-  attr_reader :id
-  attr_accessor :name, :genre, :year, :artist
+  attr_reader :id, :length
+  attr_accessor :name, :artist, :year, :genre
   
   @@albums = {}
   @@total_rows = 0
 
-  def initialize(name, year, artist, genre, id )
-    @name = name
-    @year = year
-    @artist = artist
-    @genre = genre
-    @id = id || @@total_rows += 1
+  def initialize(attrs)
+    @name = attrs[:name]
+    @artist = attrs[:artist]
+    @year = attrs[:year]
+    @genre = attrs[:genre]
+    @length = attrs[:length]
+    @id = attrs[:id] || @@total_rows += 1
   end
 
   def self.all
-    @@albums.values()
+    @@albums.values
   end
 
   def save
-    @@albums[self.id] = Album.new(self.name, self.year, self.artist, self.genre, self.id)
+    @@albums[self.id] = Album.new({name: self.name, artist: self.artist, year: self.year, genre: self.genre, length: self.length, id: self.id})
   end
 
   def ==(album_to_compare)
-    self.name() == album_to_compare.name()
+    (self.name == album_to_compare.name) && (self.artist == album_to_compare.artist)
   end
 
   def self.clear
@@ -34,27 +35,19 @@ class Album
     @@albums[id]
   end
 
-  def update(name, year, artist, genre)
-    if name != ""; @name = name end
-    if year != ""; @year = year end
-    if artist != ""; @artist = artist end
-    if genre != ""; @genre = genre end
+  def update(updates)
+    @name = updates[:name] || self.name
+    @artist = updates[:artist] || self.artist
+    @year = updates[:year] || self.year
+    @genre = updates[:genre] || self.genre
   end
 
   def delete
     @@albums.delete(self.id)
   end
 
-  def self.search(string)
-    our_hash = @@albums.select { |id, album| string.downcase == album.name.downcase }
-    our_hash.values
-  # result_array = []
-  # @@albums.each do |id, album|
-  #   if album.name.downcase == string.downcase
-  #     result_array.push(album)
-  #   end
-  # end
-  # result_array
+  def self.search(name)
+    @@albums.values.select { |album| album.name.downcase == name.downcase }
   end 
 
   def songs
